@@ -16,6 +16,8 @@ import br.com.bvidotto.entity.User;
 import br.com.bvidotto.exceptions.MovieOutOfStockException;
 import br.com.bvidotto.exceptions.RentalCompanyException;
 import br.com.bvidotto.utils.DataUtils;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
@@ -23,16 +25,30 @@ import org.junit.rules.ExpectedException;
 
 public class LocationServiceTest {
 
+    private LocationService service;
+
+    private static int count = 0;
+
     @Rule
     public ErrorCollector error = new ErrorCollector();
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
+    @Before
+    public void setup() {
+        service = new LocationService();
+    }
+
+    @After
+    public void tearDown() {
+        System.out.printf("Test %d finished.%n", count);
+        count = count + 1;
+    }
+
     @Test
     public void LocationTest() throws Exception {
         //scenery
-        LocationService service = new LocationService();
         User user = new User("User 1");
         Movie movie = new Movie("Movie 1", 2, 5.0);
 
@@ -55,10 +71,10 @@ public class LocationServiceTest {
         error.checkThat(DataUtils.isSameDate(location.getReturnDate(), DataUtils.getDataWithDifferentDate(1)), is(true));
     }
 
+    // elegant way -> good when just the exception matters
     @Test(expected = MovieOutOfStockException.class)
     public void locationTest_outOfStockMovie() throws MovieOutOfStockException, RentalCompanyException {
         //scenery
-        LocationService service = new LocationService();
         User user = new User("User 1");
         Movie movie = new Movie("Movie 1", 0, 5.0);
 
@@ -66,10 +82,10 @@ public class LocationServiceTest {
         service.hireMovie(user, movie);
     }
 
+    // robust way -> total control, checks message
     @Test
     public void locationTest_EmptyUser() throws MovieOutOfStockException {
         //scenery
-        LocationService service = new LocationService();
         Movie movie = new Movie("Movie 1", 2, 5.0);
 
         //action
@@ -81,10 +97,10 @@ public class LocationServiceTest {
         }
     }
 
+    // new way -> checks message, enough for most cases
     @Test
     public void locationTest_EmptyMovie() throws MovieOutOfStockException, RentalCompanyException {
         //scenery
-        LocationService service = new LocationService();
         User user = new User("User 1");
 
         exception.expect(RentalCompanyException.class);
