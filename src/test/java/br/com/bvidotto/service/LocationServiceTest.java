@@ -18,6 +18,7 @@ import br.com.bvidotto.entity.Movie;
 import br.com.bvidotto.entity.User;
 import br.com.bvidotto.exceptions.MovieOutOfStockException;
 import br.com.bvidotto.exceptions.RentalCompanyException;
+import br.com.bvidotto.matchers.OwnMatchers;
 import br.com.bvidotto.utils.DataUtils;
 import org.junit.After;
 import org.junit.Assume;
@@ -212,5 +213,21 @@ public class LocationServiceTest {
 
         boolean isMonday = DataUtils.verifyDayOfWeek(location.getReturnDate(), Calendar.MONDAY);
         assertTrue(isMonday);
+    }
+
+    @Test
+    public void deveDevolverNaSegundaAoAlugarNoSabado() throws MovieOutOfStockException, RentalCompanyException{
+        Assume.assumeTrue(DataUtils.verifyDayOfWeek(new Date(), Calendar.SATURDAY));
+
+        //cenario
+        User user = new User("Usuario 1");
+        List<Movie> movies = Arrays.asList(new Movie("Filme 1", 1, 5.0));
+
+        //acao
+        Location location = service.hireMovie(user, movies);
+
+        //verificacao
+        assertThat(location.getReturnDate(), OwnMatchers.isMonday());
+
     }
 }

@@ -1,4 +1,4 @@
-package br.com.bvidotto.service;
+package br.com.bvidotto;
 
 import org.junit.Assert;
 import org.junit.FixMethodOrder;

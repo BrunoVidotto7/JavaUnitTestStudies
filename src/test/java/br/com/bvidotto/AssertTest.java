@@ -1,4 +1,4 @@
-package br.com.bvidotto.service;
+package br.com.bvidotto;
 
 import br.com.bvidotto.entity.User;
 import org.junit.Assert;
@@ -21,8 +21,8 @@ public class AssertTest {
         Assert.assertEquals(Integer.valueOf(i), i2);
         Assert.assertEquals(i, i2.intValue());
 
-        Assert.assertEquals("bola", "bola");
-        Assert.assertTrue("bola".equalsIgnoreCase("Bola"));
+        Assert.assertEquals("ball", "ball");
+        Assert.assertTrue("ball".equalsIgnoreCase("ball"));
 
         User u1 = new User("User 1");
         User u2 = new User("User 1");
