@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import br.com.bvidotto.dao.LocationDao;
 import br.com.bvidotto.entity.Location;
 import br.com.bvidotto.entity.Movie;
 import br.com.bvidotto.entity.User;
@@ -16,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.mockito.Mockito;
 
 @RunWith(Parameterized.class)
 public class CalcLocationValueTest {
@@ -33,7 +35,9 @@ public class CalcLocationValueTest {
 
     @Before
     public void setup() {
+        LocationDao dao = Mockito.mock(LocationDao.class);
         service = new LocationService();
+        service.setLocationDao(dao);
     }
 
     static Movie movie1 = new Movie("Movie 1", 2, 5.0);
