@@ -78,3 +78,7 @@ fabric.properties
 
 # Target
 target
+
+.idea
+
+*iml
