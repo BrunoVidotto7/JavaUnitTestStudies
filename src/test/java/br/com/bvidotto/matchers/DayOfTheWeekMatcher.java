@@ -4,7 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import br.com.bvidotto.utils.DataUtils;
+import br.com.bvidotto.utils.DateUtils;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
@@ -24,6 +24,6 @@ public class DayOfTheWeekMatcher extends TypeSafeMatcher<Date> {
 
     @Override
     protected boolean matchesSafely(Date data) {
-        return DataUtils.verifyDayOfWeek(data, dayOfTheWeek);
+        return DateUtils.verifyDayOfWeek(data, dayOfTheWeek);
     }
 }

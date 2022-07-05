@@ -1,8 +1,10 @@
 package br.com.bvidotto.service;
 
-import static br.com.bvidotto.builder.LocationBuilder.*;
-import static br.com.bvidotto.builder.MovieBuilder.*;
-import static br.com.bvidotto.utils.DataUtils.*;
+import static br.com.bvidotto.builder.LocationBuilder.oneLocation;
+import static br.com.bvidotto.builder.MovieBuilder.oneMovie;
+import static br.com.bvidotto.utils.DateUtils.getDataWithDifferentDate;
+import static br.com.bvidotto.utils.DateUtils.isSameDate;
+import static br.com.bvidotto.utils.DateUtils.verifyDayOfWeek;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -10,15 +12,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import br.com.bvidotto.builder.LocationBuilder;
-import br.com.bvidotto.builder.MovieBuilder;
 import br.com.bvidotto.builder.UserBuilder;
 import br.com.bvidotto.dao.LocationDao;
 import br.com.bvidotto.entity.Location;
@@ -27,21 +29,28 @@ import br.com.bvidotto.entity.User;
 import br.com.bvidotto.exceptions.MovieOutOfStockException;
 import br.com.bvidotto.exceptions.RentalCompanyException;
 import br.com.bvidotto.matchers.OwnMatchers;
-import br.com.bvidotto.utils.DataUtils;
+import br.com.bvidotto.utils.DateUtils;
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({LocationService.class, DateUtils.class})
+@PowerMockIgnore("jdk.internal.reflect.*")
 public class LocationServiceTest {
 
     @InjectMocks
@@ -75,7 +84,7 @@ public class LocationServiceTest {
 
     @Test
     public void shouldHireMovie() throws Exception {
-        Assume.assumeFalse(verifyDayOfWeek(new Date(), Calendar.SATURDAY)); //Only execute if is not saturday
+        PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(DateUtils.getDate(28,4,2017));
         //scenery
         User user = UserBuilder.oneUser().now();
         Movie movie1 = oneMovie().now();
@@ -88,17 +97,17 @@ public class LocationServiceTest {
         //validation
         assertEquals(7.0, location.getValue(), 0.01);
         assertTrue(isSameDate(location.getLocationDate(), new Date()));
-        assertTrue(isSameDate(location.getReturnDate(), getDataWithDifferentDate(1)));
+        assertTrue(isSameDate(location.getReturnDate(), DateUtils.getDate(29,4,2017)));
 
         assertThat(location.getValue(), is(equalTo(7.0)));
         assertThat(location.getValue(), is(not(4.0)));
         assertThat(isSameDate(location.getLocationDate(), new Date()), is(true));
-        assertThat(isSameDate(location.getReturnDate(), getDataWithDifferentDate(1)), is(true));
+        assertThat(isSameDate(location.getReturnDate(), DateUtils.getDataWithDifferentDate(1)), is(true));
 
         error.checkThat(location.getValue(), is(equalTo(7.0)));
         error.checkThat(location.getValue(), is(not(4.0)));
-        error.checkThat(isSameDate(location.getLocationDate(), new Date()), is(true));
-        error.checkThat(isSameDate(location.getReturnDate(), getDataWithDifferentDate(1)), is(true));
+        error.checkThat(isSameDate(location.getLocationDate(), DateUtils.getDate(28, 4,2017)), is(true));
+        error.checkThat(isSameDate(location.getReturnDate(), DateUtils.getDataWithDifferentDate(1)), is(true));
     }
 
     // elegant way -> good when just the exception matters
@@ -224,12 +233,12 @@ public class LocationServiceTest {
     }
 
     @Test
-    public void mustReturnOnMondayWhenRentingOnSaturday() throws MovieOutOfStockException, RentalCompanyException {
-        Assume.assumeTrue(verifyDayOfWeek(new Date(), Calendar.SATURDAY)); //Only executes on saturday
-
+    public void mustReturnOnMondayWhenRentingOnSaturday() throws Exception {
         Movie movie1 = oneMovie().now();
-        List<Movie> movies = List.of(movie1);
+        List<Movie> movies = Collections.singletonList(movie1);
         User user = UserBuilder.oneUser().now();
+
+        PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(DateUtils.getDate(29,4,2017));
 
         Location location = locationService.hireMovie(user, movies);
 
@@ -238,21 +247,22 @@ public class LocationServiceTest {
     }
 
     @Test
-    public void shouldGoBackMondayWhenHireOnSaturday() throws MovieOutOfStockException, RentalCompanyException{
-        Assume.assumeTrue(verifyDayOfWeek(new Date(), Calendar.SATURDAY));
+    public void shouldGoBackMondayWhenHireOnSaturday() throws Exception {
+        PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(DateUtils.getDate(29,4,2017));
 
         User user = UserBuilder.oneUser().now();
-        List<Movie> movies = List.of(new Movie("Filme 1", 1, 5.0));
+        List<Movie> movies = Collections.singletonList(new Movie("Filme 1", 1, 5.0));
 
         Location location = locationService.hireMovie(user, movies);
 
         assertThat(location.getReturnDate(), OwnMatchers.isMonday());
+        PowerMockito.verifyNew(Date.class, Mockito.times(2)).withNoArguments();
     }
 
     @Test
     public void shouldThrowExceptionWhenUserIsInDebt() throws Exception {
         User user = UserBuilder.oneUser().now();
-        List<Movie> movies = List.of(new Movie("Filme 1", 1, 5.0));
+        List<Movie> movies = Collections.singletonList(new Movie("Filme 1", 1, 5.0));
 
         when(debtService.isInDebt(user)).thenReturn(true);
 
@@ -284,7 +294,7 @@ public class LocationServiceTest {
     @Test
     public void shouldTreatErrorOnDebtService() throws Exception {
         User user = UserBuilder.oneUser().now();
-        List<Movie> movies = List.of(oneMovie().now());
+        List<Movie> movies = Collections.singletonList(oneMovie().now());
 
         when(debtService.isInDebt(user)).thenThrow(new Exception("Fail at all"));
 

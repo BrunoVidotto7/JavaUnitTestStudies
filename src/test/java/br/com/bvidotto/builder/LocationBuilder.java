@@ -1,6 +1,6 @@
 package br.com.bvidotto.builder;
 
-import static br.com.bvidotto.utils.DataUtils.*;
+import static br.com.bvidotto.utils.DateUtils.*;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,7 +9,6 @@ import java.util.Date;
 import br.com.bvidotto.entity.Location;
 import br.com.bvidotto.entity.Movie;
 import br.com.bvidotto.entity.User;
-import br.com.bvidotto.utils.DataUtils;
 
 public class LocationBuilder {
     private Location element;

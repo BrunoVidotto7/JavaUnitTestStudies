@@ -2,7 +2,7 @@ package br.com.bvidotto.matchers;
 
 import java.util.Date;
 
-import br.com.bvidotto.utils.DataUtils;
+import br.com.bvidotto.utils.DateUtils;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
@@ -21,6 +21,6 @@ public class DateDifferentDaysMatcher extends TypeSafeMatcher<Date> {
 
     @Override
     protected boolean matchesSafely(Date data) {
-        return DataUtils.isSameDate(data, DataUtils.getDataWithDifferentDate(numberOfDays));
+        return DateUtils.isSameDate(data, DateUtils.getDataWithDifferentDate(numberOfDays));
     }
 }

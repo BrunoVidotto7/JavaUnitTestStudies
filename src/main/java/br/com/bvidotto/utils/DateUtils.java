@@ -8,7 +8,7 @@ import static java.util.Calendar.YEAR;
 import java.util.Calendar;
 import java.util.Date;
 
-public class DataUtils {
+public class DateUtils {
 	
 	/**
 	 * Retorna a data enviada por parametro com a adição dos dias desejado
@@ -44,7 +44,7 @@ public class DataUtils {
 	 * @param year
 	 * @return
 	 */
-	public static Date obterData(int day, int month, int year){
+	public static Date getDate(int day, int month, int year){
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(DAY_OF_MONTH, day);
 		calendar.set(MONTH, month - 1);

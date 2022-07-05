@@ -1,7 +1,7 @@
 package br.com.bvidotto.service;
 
-import static br.com.bvidotto.utils.DataUtils.addDays;
-import static br.com.bvidotto.utils.DataUtils.verifyDayOfWeek;
+import static br.com.bvidotto.utils.DateUtils.addDays;
+import static br.com.bvidotto.utils.DateUtils.verifyDayOfWeek;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -13,7 +13,7 @@ import br.com.bvidotto.entity.Movie;
 import br.com.bvidotto.entity.User;
 import br.com.bvidotto.exceptions.MovieOutOfStockException;
 import br.com.bvidotto.exceptions.RentalCompanyException;
-import br.com.bvidotto.utils.DataUtils;
+import br.com.bvidotto.utils.DateUtils;
 
 public class LocationService {
 
@@ -83,10 +83,18 @@ public class LocationService {
 
     private Double setDiscount(int i, Double movieValue) {
         switch (i) {
-            case 2 -> movieValue = movieValue * 0.75;
-            case 3 -> movieValue = movieValue * 0.5;
-            case 4 -> movieValue = movieValue * 0.25;
-            case 5 -> movieValue = movieValue * 0;
+            case 2:
+                movieValue = movieValue * 0.75;
+                break;
+            case 3:
+                movieValue = movieValue * 0.5;
+                break;
+            case 4:
+                movieValue = movieValue * 0.25;
+                break;
+            case 5:
+                movieValue = movieValue * 0;
+                break;
         }
         return movieValue;
     }
@@ -105,7 +113,7 @@ public class LocationService {
         newLocation.setUser(location.getUser());
         newLocation.setMovies(location.getMovies());
         newLocation.setLocationDate(new Date());
-        newLocation.setReturnDate(DataUtils.getDataWithDifferentDate(days));
+        newLocation.setReturnDate(DateUtils.getDataWithDifferentDate(days));
         newLocation.setValue(location.getValue() * days);
         locationDao.save(newLocation);
     }
