@@ -7,6 +7,7 @@ public class CalculatorTest {
 
     @Test
     public void shouldSumTwoValues() {
+        System.out.println("Executing sum");
         //scenery
         int a = 5;
         int b = 3;

@@ -13,6 +13,7 @@ import br.com.bvidotto.entity.Movie;
 import br.com.bvidotto.entity.User;
 import br.com.bvidotto.exceptions.MovieOutOfStockException;
 import br.com.bvidotto.exceptions.RentalCompanyException;
+import br.com.bvidotto.utils.DataUtils;
 
 public class LocationService {
 
@@ -42,7 +43,14 @@ public class LocationService {
             }
         }
 
-        if (debtService.isInDebt(user)) {
+        boolean inDebt;
+        try {
+            inDebt = debtService.isInDebt(user);
+        } catch (Exception e) {
+            throw new RentalCompanyException("System is not working now, try again later.");
+        }
+
+        if (inDebt) {
             throw new RentalCompanyException("User is in debt!");
         }
 
@@ -86,19 +94,19 @@ public class LocationService {
     public void notifyDelays() {
         List<Location> locations = locationDao.getPendingLocations();
         for(Location location: locations) {
-            emailService.notify(location.getUser());
+            if(location.getReturnDate().before(new Date())){
+                emailService.notify(location.getUser());
+            }
         }
     }
 
-    public void setLocationDao (LocationDao dao) {
-        this.locationDao = dao;
-    }
-
-    public void setDebtService (DebtService debtService) {
-        this.debtService = debtService;
-    }
-
-    public void setEmailService(EmailService emailService) {
-        this.emailService = emailService;
+    public void postponeLocation(Location location, int days) {
+        Location newLocation = new Location();
+        newLocation.setUser(location.getUser());
+        newLocation.setMovies(location.getMovies());
+        newLocation.setLocationDate(new Date());
+        newLocation.setReturnDate(DataUtils.getDataWithDifferentDate(days));
+        newLocation.setValue(location.getValue() * days);
+        locationDao.save(newLocation);
     }
 }

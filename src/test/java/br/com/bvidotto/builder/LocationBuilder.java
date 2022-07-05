@@ -1,5 +1,7 @@
 package br.com.bvidotto.builder;
 
+import static br.com.bvidotto.utils.DataUtils.*;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -27,7 +29,7 @@ public class LocationBuilder {
         element.setUser(UserBuilder.oneUser().now());
         element.setMovies(Collections.singletonList(MovieBuilder.oneMovie().now()));
         element.setLocationDate(new Date());
-        element.setReturnDate(DataUtils.getDataWithDifferentDate(1));
+        element.setReturnDate(getDataWithDifferentDate(1));
         element.setValue(4.0);
     }
 

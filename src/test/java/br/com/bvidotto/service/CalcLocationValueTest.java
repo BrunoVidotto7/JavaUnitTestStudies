@@ -17,7 +17,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.mockito.Mockito;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 @RunWith(Parameterized.class)
 public class CalcLocationValueTest {
@@ -31,13 +33,18 @@ public class CalcLocationValueTest {
     @Parameterized.Parameter(value=2)
     public String description;
 
+    @InjectMocks
     private LocationService service;
+
+    @Mock
+    private DebtService debtService;
+
+    @Mock
+    private LocationDao dao;
 
     @Before
     public void setup() {
-        LocationDao dao = Mockito.mock(LocationDao.class);
-        service = new LocationService();
-        service.setLocationDao(dao);
+        MockitoAnnotations.initMocks(this);
     }
 
     static Movie movie1 = new Movie("Movie 1", 2, 5.0);

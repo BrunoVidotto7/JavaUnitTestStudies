@@ -15,6 +15,11 @@ public class UserBuilder {
         return builder;
     }
 
+    public UserBuilder withName(String name) {
+        user.setName(name);
+        return this;
+    }
+
     public User now() {
         return user;
     }
